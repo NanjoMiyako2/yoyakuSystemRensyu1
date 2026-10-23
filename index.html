@@ -16,8 +16,11 @@
 <input type="file" id="fileInput">
 <button id="loadYoyakuVal1" onclick="loadYoyakuVals()">読み込み</button><br>
 
+備考ファイル(csv形式、ファイルを指定すると自動読み込み):<br>
+<input type="file" id="fileInput2"><br>
+
 <hr>
-<button id="outputToFile1" onclick="outputToFile()">現在の予約状況をダウンロード</button><br>
+<button id="outputToFile1" onclick="outputToFile()">現在の予約状況・備考をダウンロード</button><br>
 
 <hr>
 col:<p id="col1"></p><br>
@@ -29,6 +32,11 @@ row:<p id="row1"></p><br>
 
 <button id="add1" onclick="addOneYoyaku()">+</button><br>
 <button id="dec1" onclick="decOneYoyaku()">-</button><br>
+<hr>
+備考:
+<button id="saveBikouBt1" onclick="saveBikou()">この時点の備考を保存</button><br>
+<br>
+<textarea id="bikou1" rows="8" cols="40"></textarea>
 <hr>
 <div id="mainTable"></div>
 
