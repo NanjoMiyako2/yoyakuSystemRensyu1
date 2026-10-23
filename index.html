@@ -12,10 +12,21 @@
 <p id="msg2"></p>
 
 <hr>
+予約内容ファイル(csv形式):<br>
+<input type="file" id="fileInput">
+<button id="loadYoyakuVal1" onclick="loadYoyakuVals()">読み込み</button><br>
+
+<hr>
+<button id="outputToFile1" onclick="outputToFile()">現在の予約状況をダウンロード</button><br>
+
+<hr>
 col:<p id="col1"></p><br>
 row:<p id="row1"></p><br>
 
 <hr>
+予約最高人数:<input type="text" id="MaxNinzu1" value="1">人<br>
+<button id="setYoyakuNinzu1" onclick="setMaxYoyakuNinzu()">セット</button><br>
+
 <button id="add1" onclick="addOneYoyaku()">+</button><br>
 <button id="dec1" onclick="decOneYoyaku()">-</button><br>
 <hr>

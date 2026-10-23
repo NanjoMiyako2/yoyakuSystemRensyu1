@@ -35,6 +35,8 @@ var currentMonthFirstDate =  new Date(d.getFullYear(), d.getMonth(), 1);
 var currentMonthFirstDateDayOfWeek = currentMonthFirstDate.getDay();
 var dayIdx = currentMonthFirstDateDayOfWeek;
 
+var MonthDayCount = currentMonthMatujitu.getDate();
+
 var colNum=currentMonthMatujitu.getDate();
 var thead = document.createElement('thead');
 var tbody = document.createElement('tbody');
@@ -128,7 +130,8 @@ MocktdVals = [
 [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
 ];
 
-
+var MaxYoyakuNinzu = 1;
+MAX_RESERV_VALUE = MaxYoyakuNinzu;
 var prevClickedCellId = null;
 
 function SetTableColor(tdVals, colNum, rowNum){
@@ -202,7 +205,7 @@ function addOneYoyaku(){
 
 	MocktdVals[col2][row2]++;
 	
-	SetTableColor(MocktdVals, 31, 24);
+	SetTableColor(MocktdVals, MonthDayCount, 24);
 
 }
 function decOneYoyaku(){
@@ -218,9 +221,91 @@ function decOneYoyaku(){
 		MocktdVals[col2][row2]--;
 	}
 	
-	SetTableColor(MocktdVals, 31, 24);
+	SetTableColor(MocktdVals, MonthDayCount, 24);
 
 	
 }
-SetTableColor(MocktdVals, 31, 24);
+
+
+function setMaxYoyakuNinzu(){
+	textbox1 = document.getElementById("MaxNinzu1");
+	num1 = parseInt(textbox1.value);
+	MaxYoyakuNinzu = num1;
+	MAX_RESERV_VALUE = MaxYoyakuNinzu;
+	
+	SetTableColor(MocktdVals, MonthDayCount, 24);
+}
+
+function loadFileAsCsv(fileCont){
+	var lines = fileCont.split('\r\n');
+	var ret = [];
+	for(var l1=0; l1 <lines.length; l1++){
+		 var val3 = [];
+		 vals2 = lines[l1].split(',');
+		 for(var j2=0; j2<vals2.length; j2++){
+		 	if(vals2[j2] != ""){
+		 		val3.push(vals2[j2]);
+		 	}
+		 }
+		 ret.push(val3);
+		 
+	}
+	
+	return ret;
+}
+
+
+var fileInput = document.getElementById('fileInput');
+var textCont1;
+
+fileInput.addEventListener('change', (e) => {
+const file = e.target.files[0];
+if (!file) return;
+
+const reader = new FileReader();
+
+// 読み込みが完了した時の処理
+reader.onload = (event) => {
+  textCont1= event.target.result;
+  
+  fileYoyakuVals = loadFileAsCsv(textCont1)
+  
+};
+
+// テキストファイルとして読み込む
+reader.readAsText(file);
+});
+
+function loadYoyakuVals(){
+	MocktdVals = fileYoyakuVals;
+	SetTableColor(MocktdVals, MonthDayCount, 24);
+}
+
+function outputToFile(){
+	// 出力したい配列の例
+	 var textContent = "";
+	 
+	 for(j3=0; j3<MocktdVals.length; j3++){
+	 	textContent += MocktdVals[j3].join(",");
+	 	textContent += "\r\n";
+	 }
+	
+	// Blobを作成 (MIMEタイプを text/plain に設定)
+	var blob = new Blob([textContent], { type: 'text/plain;charset=utf-8;' });
+
+	// ダウンロード用のリンクを生成
+	var link = document.createElement('a');
+	link.href = URL.createObjectURL(blob);
+	link.download = '予約状況.txt'; // 保存するファイル名
+
+	// リンクを一時的にDOMに追加してクリックし、すぐに削除
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+
+	// メモリ解放
+	URL.revokeObjectURL(link.href);
+}
+
+SetTableColor(MocktdVals, MonthDayCount, 24);
 
