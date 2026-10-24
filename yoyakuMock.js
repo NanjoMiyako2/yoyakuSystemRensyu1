@@ -26,7 +26,9 @@ var MAX_RESERV_VALUE = 5;
 const OUTSIDE_THE_PERIOD_COLOR = "#c0c0c0";
 const MAX_RESERV_COLOR = "#ff0000";
 const RESERV_MORE_ONE_COLOR = "#00ff00";
-
+const COLOR_HOTPINK = "#ff69b4";
+const COLOR_ORANGE = "#ffa500";
+const COLOR_WHITE = "#ffffff";
 
 var table1 = document.createElement('table');
 
@@ -57,6 +59,7 @@ tr0.appendChild(noneTd);
 
 for(var j=startTime; j<=endTime; j++){
 	var td1 = document.createElement('td');
+	td1.id="thJikanTai_"+String(j);
 	td1.textContent = String(j).padStart(2, '0');
 	td1.style.fontWeight = "bold";
 	tr0.appendChild(td1);
@@ -66,6 +69,7 @@ for(var i=0; i<colNum; i++){
 	var tr = document.createElement('tr');
 	
 	var td = document.createElement('td');
+	td.id = "thHiduke_"+String(i);
 	td.textContent = year + '年' + month + '月' + (i+1) + '日'+'['+ dayname[(dayIdx%7)] + ']';
 	
 
@@ -90,6 +94,36 @@ for(var i=0; i<colNum; i++){
 	
 	dayIdx++;
 	
+}
+
+function SetThRowColor(rowNum, colorStr){
+	idStr2 = "thJikanTai_"+String(rowNum);
+	elem1 = document.getElementById(idStr2);
+	
+	elem1.style.backgroundColor=colorStr;
+}
+
+function SetThColColor(colNum, colorStr){
+	idStr3 = "thHiduke_"+String(colNum);
+	elem1 = document.getElementById(idStr3);
+	
+	elem1.style.backgroundColor=colorStr
+}
+
+function GetRowNumFromIdStr(idStr4){
+	strAry2 = idStr4.split("_");
+	row2 = strAry2[1].replaceAll("td", "");
+	
+	return parseInt(row1);
+
+}
+
+function GetColNumFromIdStr(idStr5){
+	strAry3= idStr5.split("_");
+	col2 = strAry3[0].replaceAll("tr", "");
+	
+	return parseInt(col2);
+
 }
 
 div1 = document.getElementById('mainTable');
@@ -168,12 +202,30 @@ var MaxYoyakuNinzu = 1;
 MAX_RESERV_VALUE = MaxYoyakuNinzu;
 var prevClickedCellId = null;
 
+
+function ClearThRowAndColAndPrevClickedCell(){
+	
+	for(var i4=0; i4<MonthDayCount; i4++){
+		SetThColColor(i4, COLOR_WHITE);
+		
+		for(var j4=0; j4<24; j4++){
+			idStr3 = "tr"+i4.toString() + "_td"+j4.toString();
+			elem3 = document.getElementById(idStr3);
+			elem3.style.border="1px solid #000000";
+		}
+	}
+	
+	for(var j5=0; j5<24; j5++){
+		SetThRowColor(j5, COLOR_WHITE);
+	}
+}
 function SetTableColor(tdVals, colNum, rowNum){
+
 
 	for(var k1=0; k1<colNum; k1++){
 		for(var k2=0; k2<rowNum; k2++){
-			idStr = "tr"+ k1.toString() + "_td" + k2.toString();
-			td2 = document.getElementById(idStr);
+			idStr6 = "tr"+ k1.toString() + "_td" + k2.toString();
+			td2 = document.getElementById(idStr6);
 			td2.textContent = tdVals[k1][k2];
 			
 			if(tdVals[k1][k2] == OUTSIDE_THE_PERIOD){
@@ -186,11 +238,9 @@ function SetTableColor(tdVals, colNum, rowNum){
 		}
 	}
 	
-	if(prevClickedCellId != null){
-		elem2 = document.getElementById(prevClickedCellId);
-		elem2.style.border = '4px solid #000000';
-	}	
 }
+
+
 
 
 
@@ -204,22 +254,28 @@ const table = document.getElementById('mainTable');
     const cell1 = event.target.closest('td');
     if (!cell1 || 
         cell1.id.indexOf("tr") == -1 ||
-        cell1.id.indexOf("td") == -1 ) return; // <td> 以外（隙間など）なら処理をスキップ
+        cell1.id.indexOf("td") == -1 ){
+         return; // <td> 以外（隙間など）なら処理をスキップ
+    }
 
     // 行（tr）と列（td）のインデックスを取得
-	idStr = cell1.id;
-	strAry1 = idStr.split("_");
+	idStr7 = cell1.id;
+	strAry1 = idStr7.split("_");
 	col1 = strAry1[0].replaceAll("tr", "");
 	row1 = strAry1[1].replaceAll("td", "");
+
+	if(prevClickedCellId != null){
+		ClearThRowAndColAndPrevClickedCell();
+	}
+
+	SetThRowColor(row1,COLOR_HOTPINK);
+	SetThColColor(col1, COLOR_ORANGE);
 
     // 結果をコンソールに表示 (0から始まるインデックス)
     col1Elem = document.getElementById("col1");
     row1Elem = document.getElementById("row1");
 	cell1.style.border = '4px solid #000000';
-	if(prevClickedCellId != null){
-		elem2 = document.getElementById(prevClickedCellId);
-		elem2.style.border = '0px';		
-	}
+
 	prevClickedCellId = "tr"+col1+"_td"+row1;
 	
     
@@ -228,6 +284,9 @@ const table = document.getElementById('mainTable');
     drawBikou(col1, row1);
     
   });
+
+
+
 
 
 function addOneYoyaku(){
@@ -339,6 +398,78 @@ reader2.onload = (event) => {
 
 // テキストファイルとして読み込む
 reader2.readAsText(file2);
+});
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'a') {
+    addOneYoyaku();
+  }else if (event.key === 'd') {
+    decOneYoyaku();
+  }else if(prevClickedCellId != null && (event.key == 'ArrowUp' || event.key == 'ArrowDown' || event.key == 'ArrowLeft' || event.key == 'ArrowRight')){
+
+  	idStr8 = prevClickedCellId;
+	strAry3 = idStr8.split("_");
+	col1 = strAry3[0].replaceAll("tr", "");
+	row1 = strAry3[1].replaceAll("td", "");
+
+
+	c2 = parseInt(col1);
+	r2 = parseInt(row1);
+	if(prevClickedCellId != null){
+		ClearThRowAndColAndPrevClickedCell();
+	}
+	
+	
+    switch (event.key) {
+    case 'ArrowUp':
+      //alert('上矢印キーが押されました');
+      
+      if(c2 >= 1){
+      	c2--;
+      }
+      break;
+    case 'ArrowDown':
+      //alert('下矢印キーが押されました');
+
+      if(c2 < (MonthDayCount-1)){
+      	c2++;
+      }
+      break;
+    case 'ArrowLeft':
+      //alert('左矢印キーが押されました');
+
+      if(r2 >= 1){
+      	r2--;
+      }
+      break;
+    case 'ArrowRight':
+      //alert('右矢印キーが押されました');
+
+      if(r2 < 23){
+      	r2++;
+      }
+      break;
+  	}
+  	
+ 
+  	SetThRowColor(r2,COLOR_HOTPINK);
+	SetThColColor(c2, COLOR_ORANGE);
+	idStr9 = "tr"+c2.toString()+"_td"+r2.toString();
+	cell2 = document.getElementById(idStr9);
+
+    // 結果をコンソールに表示 (0から始まるインデックス)
+    col1Elem = document.getElementById("col1");
+    row1Elem = document.getElementById("row1");
+	cell2.style.border = '4px solid #000000';
+	
+   	col1Elem.innerHTML = c2.toString();
+    row1Elem.innerHTML = r2.toString();
+    
+    prevClickedCellId = idStr9;
+
+	
+  }
+
 });
 
 
